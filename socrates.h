@@ -165,6 +165,14 @@ struct Matrix3 {
     data[3] = scalar; data[4] = scalar; data[5] = scalar;
     data[6] = scalar; data[7] = scalar; data[8] = scalar;
   }
+
+  // Fills the matrix with the given vectors 
+  // NOTE: The given vectors will be filled in as columns
+  Matrix3(const Vector3& col1, const Vector3& col2, const Vector3& col3) {
+    data[0] = col1.x; data[1] = col1.y; data[2] = col1.z;
+    data[3] = col2.x; data[4] = col2.y; data[5] = col2.z;
+    data[6] = col3.x; data[7] = col3.y; data[8] = col3.z;
+  }
   
   float32 operator[](const uint32 index) {
     if(index > 9 || index < 0) {
@@ -222,6 +230,15 @@ union Matrix4 {
     data[4]  = scalar; data[5]  = scalar; data[6]  = scalar; data[7]  = scalar;
     data[8]  = scalar; data[9]  = scalar; data[10] = scalar; data[11] = scalar;
     data[12] = scalar; data[13] = scalar; data[14] = scalar; data[15] = scalar;
+  }
+  
+  // Fills the matrix with the given vectors 
+  // NOTE: The given vectors will be filled in as columns
+  Matrix4(const Vector4& col1, const Vector4& col2, const Vector4& col3, const Vector4& col4) {
+    data[0]  = col1.x; data[1]  = col1.y; data[2]  = col1.z; data[3]  = col1.w;
+    data[4]  = col2.x; data[5]  = col2.y; data[6]  = col2.z; data[7]  = col2.w;
+    data[8]  = col3.x; data[9]  = col3.y; data[10] = col3.z; data[11] = col3.w;
+    data[12] = col4.x; data[13] = col4.y; data[14] = col4.z; data[15] = col4.w;
   }
   
   float32 operator[](const uint32 index) {
@@ -736,25 +753,198 @@ SOC_INLINE const Vector4 vec4_normalize(const Vector4& v) {
 
 // Matrix3 functions
 ///////////////////////////////////////////////////////////////
-const float32 mat3_det(const Matrix3& m);
+SOC_INLINE const float32 mat3_det(const Matrix3& m) {
+  return (m[0] * m[4] * m[8]) + (m[1] * m[5] * m[6]) + (m[2] * m[3] * m[7]) -
+         (m[0] * m[5] * m[7]) - (m[1] * m[3] * m[8]) - (m[2] * m[4] * m[6]);
+}
 
-const Matrix3 mat3_transpose(const Matrix3& m);
-const Matrix3 mat3_inverse(const Matrix3& m);
-const Matrix3 mat3_rotate(const Vector3& axis, const float32 angle);
-const Matrix3 mat3_scale(const Vector3& axis, const float32 scale);
-const Matrix3 mat3_reflect(const Vector3& point);
-const Matrix3 mat3_skew(const Vector3& axis, const Vector3& direction, const float32 scale);
+SOC_INLINE const Matrix3 mat3_transpose(const Matrix3& m) {
+  return Matrix3(m[0], m[3], m[6], 
+                 m[1], m[4], m[7], 
+                 m[2], m[5], m[8]);
+}
+
+SOC_INLINE const Matrix3 mat3_inverse(const Matrix3& m) {
+  Vector3 v1(m[0], m[3], m[6]); 
+  Vector3 v2(m[1], m[4], m[7]); 
+  Vector3 v3(m[2], m[5], m[8]); 
+
+  Vector3 r0 = vec3_cross(v2, v3);
+  Vector3 r1 = vec3_cross(v3, v1);
+  Vector3 r2 = vec3_cross(v1, v2);
+
+  float32 inv_det = 1.0f / vec3_dot(r2, v3);
+
+  return Matrix3(r0.x * inv_det, r1.x * inv_det, r2.x * inv_det,
+                 r0.y * inv_det, r1.y * inv_det, r2.y * inv_det,
+                 r0.z * inv_det, r1.z * inv_det, r2.z * inv_det);
+}
+
+SOC_INLINE const Matrix3 mat3_rotate_x(const float32 angle) {
+  float32 c = cos(angle);
+  float32 s = sin(angle);
+
+  return Matrix3(1.0f, 0.0f, 0.0f, 
+                 0.0f, c,    -s, 
+                 0.0f, s,    c);
+}
+
+SOC_INLINE const Matrix3 mat3_rotate_y(const float32 angle) {
+  float32 c = cos(angle);
+  float32 s = sin(angle);
+
+  return Matrix3(c,    0.0f, s, 
+                 0.0f, 1.0f, 0.0f, 
+                 -s,   0.0f, c);
+}
+
+SOC_INLINE const Matrix3 mat3_rotate_z(const float32 angle) {
+  float32 c = cos(angle);
+  float32 s = sin(angle);
+
+  return Matrix3(c,   -s,    0.0f, 
+                 s,    c,    0.0f, 
+                 0.0f, 0.0f, 1.0f);
+}
+
+SOC_INLINE const Matrix3 mat3_rotate(const Vector3& axis, const float32 angle) {
+  float32 c = cos(angle);
+  float32 s = sin(angle);
+  float32 d = (1.0f - c);
+
+  float32 cx = d * axis.x; 
+  float32 cy = d * axis.y; 
+  float32 cz = d * axis.z; 
+
+  return Matrix3(c + cx * axis.x, cx * axis.y - s * axis.z, cx * axis.z + s * axis.y, 
+                 cx * axis.y + s * axis.z, c + cy * axis.y, cy * axis.z - s * axis.x, 
+                 cx * axis.z - s * axis.y, cy * axis.z + s * axis.x, c + cz * axis.z);
+}
+
+SOC_INLINE const Matrix3 mat3_scale(const Vector3& axis, const float32 scale) {
+  float32 s = (scale - 1.0f);
+  
+  float32 sx = s * axis.x;
+  float32 sy = s * axis.y;
+  float32 sz = s * axis.z;
+
+  float32 axay = sx * axis.y;
+  float32 axaz = sx * axis.z; 
+  float32 ayaz = sy * axis.z;
+
+  return Matrix3(sx * axis.x + 1.0f, axay, axaz, 
+                 axay, sy * axis.y + 1.0f, ayaz, 
+                 axaz, ayaz, sz * axis.z + 1.0f);
+}
+
+SOC_INLINE const Matrix3 mat3_reflect(const Vector3& point) {
+  float32 x = -2.0f * point.x; 
+  float32 y = -2.0f * point.y; 
+  float32 z = -2.0f * point.z; 
+
+  float32 axay = x * point.y;
+  float32 axaz = x * point.z; 
+  float32 ayaz = y * point.z;
+
+  return Matrix3(x * point.x + 1.0f, axay, axaz, 
+                 axay, y * point.y + 1.0f, ayaz, 
+                 axaz, ayaz, z * point.z + 1.0f);
+}
+
+SOC_INLINE const Matrix3 mat3_skew(const Vector3& axis, const Vector3& direction, const float32 angle) {
+  float t = tan(angle);
+
+  float32 x = axis.x * t; 
+  float32 y = axis.y * t; 
+  float32 z = axis.z * t; 
+
+  return Matrix3(x * direction.x + 1.0f, x * direction.y, x * direction.z, 
+                 y * direction.x, y * direction.y + 1.0f, y * direction.z, 
+                 z * direction.x, z * direction.y, z * direction.z + 1.0f);
+}
 ///////////////////////////////////////////////////////////////
 
 // Matrix4 functions 
 ///////////////////////////////////////////////////////////////
-const float32 mat4_det(const Matrix4& m);
+SOC_INLINE const float32 mat4_det(const Matrix4& m) {
+  return (m[3] * m[6] * m[9]  * m[12]) - (m[2] * m[7] * m[9]  * m[12]) - 
+         (m[3] * m[5] * m[10] * m[12]) + (m[1] * m[7] * m[10] * m[12]) + 
+         (m[2] * m[5] * m[11] * m[12]) - (m[1] * m[6] * m[11] * m[12]) - 
+         (m[3] * m[6] * m[8]  * m[13]) + (m[2] * m[7] * m[8]  * m[13]) + 
+         (m[3] * m[4] * m[10] * m[13]) - (m[0] * m[7] * m[10] * m[13]) - 
+         (m[2] * m[4] * m[11] * m[13]) + (m[0] * m[6] * m[11] * m[13]) + 
+         (m[3] * m[5] * m[8]  * m[14]) - (m[1] * m[7] * m[8]  * m[14]) - 
+         (m[3] * m[4] * m[9]  * m[14]) + (m[0] * m[7] * m[9]  * m[14]) + 
+         (m[1] * m[4] * m[11] * m[14]) - (m[0] * m[5] * m[11] * m[14]) - 
+         (m[2] * m[5] * m[8]  * m[15]) + (m[1] * m[6] * m[8]  * m[15]) + 
+         (m[2] * m[4] * m[9]  * m[15]) - (m[0] * m[6] * m[9]  * m[15]) - 
+         (m[1] * m[4] * m[10] * m[15]) + (m[0] * m[5] * m[10] * m[15]); 
+}
 
-const Matrix4 mat4_transpose(const Matrix4& m);
-const Matrix4 mat4_inverse(const Matrix4& m);
-const Matrix4 mat4_translate(const Vector3& position);
-const Matrix4 mat4_rotate(const Vector3& axis, const float32 angle);
-const Matrix4 mat4_scale(const Vector3& axis, const float32 scale);
+SOC_INLINE const Matrix4 mat4_transpose(const Matrix4& m) {
+  return Matrix4(m[0], m[4], m[8],  m[12], 
+                 m[1], m[5], m[9],  m[13], 
+                 m[2], m[6], m[10], m[14], 
+                 m[3], m[7], m[11], m[15]);
+}
+
+SOC_INLINE const Matrix4 mat4_inverse(const Matrix4& m) {
+  Vector3 a(m[0], m[4], m[8]);
+  Vector3 b(m[1], m[5], m[9]);
+  Vector3 c(m[2], m[6], m[10]);
+  Vector3 d(m[3], m[7], m[11]);
+
+  float32 x = m[12];
+  float32 y = m[13];
+  float32 z = m[14];
+  float32 w = m[15];
+
+  Vector3 s = vec3_cross(a, b);
+  Vector3 t = vec3_cross(c, d);
+  Vector3 u = a * y - b * x; 
+  Vector3 v = c * w - d * z; 
+
+  float32 inv_det = 1.0f / (vec3_dot(s, v) + vec3_dot(t, u));
+  s *= inv_det;
+  t *= inv_det;
+  u *= inv_det;
+  v *= inv_det;
+
+  Vector3 r0 = vec3_cross(b, v) + t * y;
+  Vector3 r1 = vec3_cross(v, a) - t * x;
+  Vector3 r2 = vec3_cross(d, u) + s * w;
+  Vector3 r3 = vec3_cross(u, c) - s * z;
+
+  return Matrix4(r0.x, r1.x, r2.x, r3.x, 
+                 r0.y, r1.y, r2.y, r3.y,  
+                 r0.z, r1.z, r2.z, r3.z, 
+                -vec3_dot(b, t), vec3_dot(a, t), -vec3_dot(d, s), vec3_dot(c, s));
+}
+
+SOC_INLINE const Matrix4 mat4_translate(const Vector3& position) {
+  Matrix4 iden_mat;
+  iden_mat.data[12] = position.x; 
+  iden_mat.data[13] = position.y;
+  iden_mat.data[14] = position.z;
+
+  return iden_mat;
+}
+
+SOC_INLINE const Matrix4 mat4_rotate(const Vector3& axis, const float32 angle) {
+  Matrix3 mat = mat3_rotate(axis, angle); 
+  return Matrix4() * Matrix4(mat[0], mat[1], mat[2], 0.0f, 
+                             mat[3], mat[4], mat[5], 0.0f, 
+                             mat[6], mat[7], mat[8], 0.0f, 
+                             0.0f,   0.0f,   0.0f,   1.0f);
+}
+
+SOC_INLINE const Matrix4 mat4_scale(const Vector3& axis, const float32 scale) {
+  Matrix3 mat = mat3_scale(axis, scale); 
+  return Matrix4() * Matrix4(mat[0], mat[1], mat[2], 0.0f, 
+                             mat[3], mat[4], mat[5], 0.0f, 
+                             mat[6], mat[7], mat[8], 0.0f, 
+                             0.0f,   0.0f,   0.0f,   1.0f);
+}
 ///////////////////////////////////////////////////////////////
 
 } // End of soc
