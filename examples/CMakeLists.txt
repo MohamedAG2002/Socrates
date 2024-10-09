@@ -4,6 +4,7 @@ project(Soc_Example)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(EXAMPLE_SOURCES 
+  ../socrates.cpp
   main.cpp
 )
 

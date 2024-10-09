@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 namespace soc { // Start of soc
 
 // Typedefs
@@ -679,6 +681,80 @@ SOC_INLINE void operator*=(Matrix4& m, const float32 s) {
   m = m * s;
 }
 
+///////////////////////////////////////////////////////////////
+
+// Vector2 functions
+///////////////////////////////////////////////////////////////
+SOC_INLINE const float32 vec2_dot(const Vector2& v1, const Vector2& v2) {
+  return (v1.x * v2.x) + (v1.y * v2.y);
+}
+
+SOC_INLINE const float32 vec2_length(const Vector2& v) {
+  return sqrt((v.x * v.x) + (v.y * v.y));
+}
+
+SOC_INLINE const Vector2 vec2_normalize(const Vector2& v) {
+  return v / vec2_length(v);
+}
+///////////////////////////////////////////////////////////////
+
+// Vector3 functions 
+///////////////////////////////////////////////////////////////
+SOC_INLINE const float32 vec3_dot(const Vector3& v1, const Vector3& v2) {
+  return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);
+}
+
+SOC_INLINE const float32 vec3_length(const Vector3& v) {
+  return sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
+}
+
+SOC_INLINE const Vector3 vec3_normalize(const Vector3& v) {
+  return v / vec3_length(v);
+}
+
+SOC_INLINE const Vector3 vec3_cross(const Vector3& v1, const Vector3& v2) {
+  return Vector3((v1.y * v2.z) - (v1.z * v2.y), 
+                 (v1.z * v2.x) - (v1.x * v2.z), 
+                 (v1.x * v2.y) - (v1.y * v2.x));
+}
+///////////////////////////////////////////////////////////////
+
+// Vector4 functions
+///////////////////////////////////////////////////////////////
+SOC_INLINE const float32 vec4_dot(const Vector4& v1, const Vector4& v2) {
+  return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z) + (v1.w * v2.w);
+}
+
+SOC_INLINE const float32 vec4_length(const Vector4& v) {
+  return sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z) + (v.w * v.w));
+}
+
+SOC_INLINE const Vector4 vec4_normalize(const Vector4& v) {
+  return v / vec4_length(v);
+}
+///////////////////////////////////////////////////////////////
+
+// Matrix3 functions
+///////////////////////////////////////////////////////////////
+const float32 mat3_det(const Matrix3& m);
+
+const Matrix3 mat3_transpose(const Matrix3& m);
+const Matrix3 mat3_inverse(const Matrix3& m);
+const Matrix3 mat3_rotate(const Vector3& axis, const float32 angle);
+const Matrix3 mat3_scale(const Vector3& axis, const float32 scale);
+const Matrix3 mat3_reflect(const Vector3& point);
+const Matrix3 mat3_skew(const Vector3& axis, const Vector3& direction, const float32 scale);
+///////////////////////////////////////////////////////////////
+
+// Matrix4 functions 
+///////////////////////////////////////////////////////////////
+const float32 mat4_det(const Matrix4& m);
+
+const Matrix4 mat4_transpose(const Matrix4& m);
+const Matrix4 mat4_inverse(const Matrix4& m);
+const Matrix4 mat4_translate(const Vector3& position);
+const Matrix4 mat4_rotate(const Vector3& axis, const float32 angle);
+const Matrix4 mat4_scale(const Vector3& axis, const float32 scale);
 ///////////////////////////////////////////////////////////////
 
 } // End of soc
