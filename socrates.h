@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <cstdio>
 
 namespace soc { // Start of soc
 
@@ -43,9 +44,18 @@ typedef double float64;
 
 // Two component vector
 union Vector2 {
+  float32 components[2];
+
   struct {
-    float32 x, r, u; 
-    float32 y, g, v;
+    float32 x, y;
+  };
+
+  struct {
+    float32 u, v; 
+  };
+  
+  struct {
+    float32 r, g; 
   };
   
   // Default CTOR
@@ -63,14 +73,41 @@ union Vector2 {
   Vector2(float32 s)
     :x(s), y(s) 
   {}
+
+  // Index operator overload into the components
+  float32 operator[](const uint32 index) {
+    if(index < 0 || index > 2) {
+      // @TODO: Should assert here
+      return 0.0f;
+    }
+
+    return components[index];
+  }
+  
+  float32 operator[](const uint32 index) const {
+    if(index < 0 || index > 2) {
+      // @TODO: Should assert here
+      return 0.0f;
+    }
+
+    return components[index];
+  }
 };
 
 // Three component vector
 union Vector3 {
+  float32 components[3];
+
   struct {
-    float32 x, r, u; 
-    float32 y, g, v;
-    float32 z, b, w;
+    float32 x, y, z;
+  };
+
+  struct {
+    float32 u, v, w; 
+  };
+  
+  struct {
+    float32 r, g, b; 
   };
   
   // Default CTOR
@@ -94,15 +131,37 @@ union Vector3 {
   Vector3(float32 s)
     :x(s), y(s), z(s) 
   {}
+  
+  // Index operator overload into the components
+  float32 operator[](const uint32 index) {
+    if(index < 0 || index > 3) {
+      // @TODO: Should assert here
+      return 0.0f;
+    }
+
+    return components[index];
+  }
+  
+  float32 operator[](const uint32 index) const {
+    if(index < 0 || index > 3) {
+      // @TODO: Should assert here
+      return 0.0f;
+    }
+
+    return components[index];
+  }
 };
 
 // Four component vector 
 union Vector4 {
+  float32 components[4];
+
   struct {
-    float32 x, r; 
-    float32 y, g;
-    float32 z, b;
-    float32 w, a;
+    float32 x, y, z, w;
+  };
+  
+  struct {
+    float32 r, g, b, a; 
   };
   
   // Default CTOR
@@ -127,6 +186,25 @@ union Vector4 {
   Vector4(float32 s)
     :x(s), y(s), z(s), w(s) 
   {}
+  
+  // Index operator overload into the components
+  float32 operator[](const uint32 index) {
+    if(index < 0 || index > 4) {
+      // @TODO: Should assert here
+      return 0.0f;
+    }
+
+    return components[index];
+  }
+  
+  float32 operator[](const uint32 index) const {
+    if(index < 0 || index > 4) {
+      // @TODO: Should assert here
+      return 0.0f;
+    }
+
+    return components[index];
+  }
 };
 
 // A 3x3 matrix 
@@ -257,6 +335,29 @@ union Matrix4 {
     return data[index];
   }
 };
+
+// A quaternion 
+///////////////////////////////////////////////////////////////
+union Quaternion {
+  struct {
+    float32 x, y, z, w;
+  };
+
+  // Default CTOR
+  Quaternion() = default;
+
+  // Taking in the 4 components of the Quaternion 
+  Quaternion(const float32 x, const float32 y, const float32 z, const float32 w) 
+    :x(x), y(y), z(z), w(w) 
+  {}
+
+  // Fill the `x`, `y`, and `z` components with the given vector `vec` and 
+  // fill the `w` component with given scalar `w`
+  Quaternion(const Vector3& vec, const float32 w) 
+    :x(vec.x), y(vec.y), z(vec.z), w(w)
+  {}
+};
+///////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////
 
@@ -697,7 +798,44 @@ SOC_INLINE void operator*=(Matrix4& m1, const Matrix4& m2) {
 SOC_INLINE void operator*=(Matrix4& m, const float32 s) {
   m = m * s;
 }
+///////////////////////////////////////////////////////////////
 
+// Quaternion operator overloading
+///////////////////////////////////////////////////////////////
+SOC_INLINE const Quaternion operator+(const Quaternion& q1, const Quaternion& q2) {
+  return Quaternion(q1.x + q2.x, q1.y + q2.y, q1.z + q2.z, q1.w + q2.w);
+}
+
+SOC_INLINE const void operator+=(Quaternion& q1, const Quaternion& q2) {
+  q1 = q1 + q2; 
+}
+
+SOC_INLINE const Quaternion operator-(const Quaternion& q1, const Quaternion& q2) {
+  return Quaternion(q1.x - q2.x, q1.y - q2.y, q1.z - q2.z, q1.w - q2.w);
+}
+
+SOC_INLINE const void operator-=(Quaternion& q1, const Quaternion& q2) {
+  q1 = q1 - q2; 
+}
+
+SOC_INLINE const Quaternion operator*(const Quaternion& q1, const Quaternion& q2) {
+  return Quaternion(q1.w * q2.x + q1.x * q2.w + q1.y * q2.z - q1.z * q2.y, 
+                    q1.w * q2.y - q1.x * q2.z + q1.y * q2.w + q1.z * q2.x, 
+                    q1.w * q2.z + q1.x * q2.y - q1.y * q2.x + q1.z * q2.w, 
+                    q1.w * q2.w - q1.x * q2.x - q1.y * q2.y - q1.z * q2.z);
+}
+
+SOC_INLINE const void operator*=(Quaternion& q1, const Quaternion& q2) {
+  q1 = q1 * q2; 
+}
+
+SOC_INLINE const Quaternion operator*(const Quaternion& q, const float32 s) {
+  return Quaternion(q.x * s, q.y * s, q.z * s, q.w * s);
+}
+
+SOC_INLINE const void operator*=(Quaternion& q, const float32 s) {
+  q = q * s; 
+}
 ///////////////////////////////////////////////////////////////
 
 // Vector2 functions
@@ -812,13 +950,24 @@ SOC_INLINE const Matrix3 mat3_rotate(const Vector3& axis, const float32 angle) {
   float32 s = sin(angle);
   float32 d = (1.0f - c);
 
-  float32 cx = d * axis.x; 
-  float32 cy = d * axis.y; 
-  float32 cz = d * axis.z; 
+  // Need to normalize the axis 
+  Vector3 norm_axis = vec3_normalize(axis);
 
-  return Matrix3(c + cx * axis.x, cx * axis.y - s * axis.z, cx * axis.z + s * axis.y, 
-                 cx * axis.y + s * axis.z, c + cy * axis.y, cy * axis.z - s * axis.x, 
-                 cx * axis.z - s * axis.y, cy * axis.z + s * axis.x, c + cz * axis.z);
+  float32 cx = norm_axis.x * d; 
+  float32 cy = norm_axis.y * d; 
+  float32 cz = norm_axis.z * d;
+
+  return Matrix3(c    + cx * norm_axis.x, // 0
+                 cx * norm_axis.y + s  * norm_axis.z, // 1
+                 cx * norm_axis.z - s  * norm_axis.y, // 2
+
+                 cy * norm_axis.x - s  * norm_axis.z, // 3
+                 c    + cy * norm_axis.y, // 4
+                 cy * norm_axis.z + s  * norm_axis.x, // 5
+
+                 cz * norm_axis.x + s  * norm_axis.y, // 6
+                 cz * norm_axis.y - s  * norm_axis.x, // 7
+                 c    + cz * norm_axis.z);// 8
 }
 
 SOC_INLINE const Matrix3 mat3_scale(const Vector3& axis, const float32 scale) {
@@ -921,30 +1070,59 @@ SOC_INLINE const Matrix4 mat4_inverse(const Matrix4& m) {
                 -vec3_dot(b, t), vec3_dot(a, t), -vec3_dot(d, s), vec3_dot(c, s));
 }
 
+
 SOC_INLINE const Matrix4 mat4_translate(const Vector3& position) {
   Matrix4 iden_mat;
-  iden_mat.data[12] = position.x; 
-  iden_mat.data[13] = position.y;
-  iden_mat.data[14] = position.z;
+  
+  float32 cx1 = iden_mat[0] * position.x;
+  float32 cy1 = iden_mat[1] * position.x;
+  float32 cz1 = iden_mat[2] * position.x;
+  
+  float32 cx2 = iden_mat[4] * position.y;
+  float32 cy2 = iden_mat[5] * position.y;
+  float32 cz2 = iden_mat[6] * position.y;
+  
+  float32 cx3 = iden_mat[8]  * position.z;
+  float32 cy3 = iden_mat[9]  * position.z;
+  float32 cz3 = iden_mat[10] * position.z;
+
+  iden_mat.data[12] = cx1 + cx2 + cx3;
+  iden_mat.data[13] = cy1 + cy2 + cy3;
+  iden_mat.data[14] = cz1 + cz2 + cz3;
 
   return iden_mat;
 }
 
+// @NOTE: The axis SHOULD be normalized
 SOC_INLINE const Matrix4 mat4_rotate(const Vector3& axis, const float32 angle) {
   Matrix3 mat = mat3_rotate(axis, angle); 
-  return Matrix4() * Matrix4(mat[0], mat[1], mat[2], 0.0f, 
-                             mat[3], mat[4], mat[5], 0.0f, 
-                             mat[6], mat[7], mat[8], 0.0f, 
-                             0.0f,   0.0f,   0.0f,   1.0f);
+  return Matrix4(mat[0], mat[1], mat[2], 0.0f, 
+                 mat[3], mat[4], mat[5], 0.0f, 
+                 mat[6], mat[7], mat[8], 0.0f, 
+                 0.0f,   0.0f,   0.0f,   1.0f);
 }
 
-SOC_INLINE const Matrix4 mat4_scale(const Vector3& axis, const float32 scale) {
-  Matrix3 mat = mat3_scale(axis, scale); 
-  return Matrix4() * Matrix4(mat[0], mat[1], mat[2], 0.0f, 
-                             mat[3], mat[4], mat[5], 0.0f, 
-                             mat[6], mat[7], mat[8], 0.0f, 
-                             0.0f,   0.0f,   0.0f,   1.0f);
+SOC_INLINE const Matrix4 mat4_scale(const Vector3& scale) {
+  Matrix4 iden_mat;
+
+  iden_mat.data[0] *= scale.x;
+  iden_mat.data[1] *= scale.x;
+  iden_mat.data[2] *= scale.x;
+
+  iden_mat.data[4] *= scale.y;
+  iden_mat.data[5] *= scale.y;
+  iden_mat.data[6] *= scale.y;
+  
+  iden_mat.data[8]  *= scale.z;
+  iden_mat.data[9]  *= scale.z;
+  iden_mat.data[10] *= scale.z;
+
+  return iden_mat;
 }
+///////////////////////////////////////////////////////////////
+
+// Quaternion functions
+///////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////
 
 } // End of soc
