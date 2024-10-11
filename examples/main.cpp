@@ -9,8 +9,4 @@
 #define MAT4_PRINT(m) for(int i = 0; i < 16; i++) {if(i % 4 == 0) {printf("\n");} printf("%f ", m[i]);} printf("\n")
 
 int main() {
-  soc::Quaternion quat(0.0f, 1.0f, 0.0f, 4.0f);
-  quat *= 4.0f; 
-
-  VEC4_PRINT(quat);
 }

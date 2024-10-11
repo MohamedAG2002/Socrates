@@ -1011,13 +1011,6 @@ SOC_INLINE const Matrix3 mat3_skew(const Vector3& axis, const Vector3& direction
                  y * direction.x, y * direction.y + 1.0f, y * direction.z, 
                  z * direction.x, z * direction.y, z * direction.z + 1.0f);
 }
-
-SOC_INLINE const Matrix4 mat3_to_mat4(const Matrix3& m) {
-  return Matrix4(m[0], m[1], m[2], 0.0f, 
-                 m[3], m[4], m[5], 0.0f, 
-                 m[6], m[7], m[8], 0.0f, 
-                 0.0f, 0.0f, 0.0f, 1.0f);
-}
 ///////////////////////////////////////////////////////////////
 
 // Matrix4 functions 
@@ -1126,89 +1119,13 @@ SOC_INLINE const Matrix4 mat4_scale(const Vector3& scale) {
 
   return iden_mat;
 }
-
-SOC_INLINE const Matrix3 mat4_to_mat3(const Matrix4& m) {
-  return Matrix3(m[0], m[1], m[2], 
-                 m[4], m[5], m[6], 
-                 m[8], m[9], m[10]);
-}
 ///////////////////////////////////////////////////////////////
 
 // Quaternion functions
 ///////////////////////////////////////////////////////////////
-SOC_INLINE const Matrix3 quat_get_mat3(const Quaternion& q) {
-  float32 x2 = q.x * q.x; 
-  float32 y2 = q.y * q.y; 
-  float32 z2 = q.z * q.z;
-
-  float32 xy = q.x * q.y; 
-  float32 xz = q.x * q.z;
-  float32 yz = q.y * q.z;
-  float32 wx = q.w * q.x;
-  float32 wy = q.w * q.y;
-  float32 wz = q.w * q.z;
-
-  return Matrix3(1.0f - 2.0f * (y2 + z2), 2.0f * (xy + wz), 2.0f * (xz - wy), 
-                 2.0f * (xy - wz), 1.0f - 2.0f * (x2 + z2), 2.0f * (yz + wx), 
-                 2.0f * (xz + wy), 2.0f * (yz - wx), 1.0f - 2.0f * (x2 + y2));
-}
-
-SOC_INLINE const Matrix4 quat_get_mat4(const Quaternion& q) {
-  return soc::mat3_to_mat4(quat_get_mat3(q));
-}
-
-SOC_INLINE const Quaternion quat_set_mat3(const Matrix3& m) {
-  Quaternion q; 
-
-  float32 m00 = m[0];
-  float32 m11 = m[4];
-  float32 m22 = m[8];
-  float32 sum = m00 + m11 + m22;
-
-  if(sum > 0) {
-    q.w = sqrt(sum + 1.0f) * 0.5f; 
-    float32 f = 0.25f / q.w;
-
-    q.x = (m[5] - m[7]) * f;
-    q.y = (m[6] - m[2]) * f;
-    q.z = (m[1] - m[3]) * f;
-  }
-  else if((m00 > m11) && (m00 > m22)) {
-    q.x = sqrt(m00 - m11 - m22 + 1.0f) * 0.5f; 
-    float f = 0.25f / q.x;
-
-    q.y = (m[1] + m[3]) * f;
-    q.z = (m[6] + m[2]) * f;
-    q.w = (m[5] - m[7]) * f;
-  }
-  else if(m11 > m22) {
-    q.y = sqrt(m11 - m00 - m22 + 1.0f) * 0.5f;
-    float f = 0.25f / q.y;
-    
-    q.x = (m[1] + m[3]) * f;
-    q.z = (m[5] + m[7]) * f;
-    q.w = (m[6] - m[2]) * f;
-  }
-  else {
-    q.z = sqrt(m22 - m00 - m11 + 1.0f) * 0.5f;
-    float f = 0.25f / q.z;
-    
-    q.x = (m[6] + m[2]) * f;
-    q.y = (m[5] + m[7]) * f;
-    q.w = (m[1] - m[3]) * f;
-  }
-
-  return q;
-}
-
-SOC_INLINE const Quaternion quat_set_mat4(const Matrix4& m) {
-  return quat_set_mat3(mat4_to_mat3(m));
-}
-
-SOC_INLINE const Quaternion quat_axis_angle(const Vector3& axis, const float32 angle) {
-  float32 s = sin(angle * 0.5f);
-  return Quaternion(axis * s, cos(angle * 0.5f));
-}
+SOC_INLINE const Quaternion quat_set_mat3(const Quaternion& q, const Matrix3& mat);
+SOC_INLINE const Matrix3 quat_get_mat3(const Quaternion& q);
+SOC_INLINE const Quaternion quat_angle_axis(const Vector3& axis, const float32 angle);
 ///////////////////////////////////////////////////////////////
 
 } // End of soc
