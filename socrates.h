@@ -733,25 +733,22 @@ SOC_INLINE Matrix4 operator-(const Matrix4& m, const float32 s) {
 }
 
 SOC_INLINE Matrix4 operator*(const Matrix4& m1, const Matrix4& m2) {
-  return Matrix4((m1[0] * m2[0]) + (m1[1] * m2[4]) + (m1[2] * m2[8])  + (m1[3] * m2[12]), // m0
-                 (m1[0] * m2[1]) + (m1[1] * m2[5]) + (m1[2] * m2[9])  + (m1[3] * m2[13]), // m1
-                 (m1[0] * m2[2]) + (m1[1] * m2[6]) + (m1[2] * m2[10]) + (m1[3] * m2[14]), // m2
-                 (m1[0] * m2[3]) + (m1[1] * m2[7]) + (m1[2] * m2[11]) + (m1[3] * m2[15]), // m3
-                 
-                 (m1[4] * m2[0]) + (m1[5] * m2[4]) + (m1[6] * m2[8])  + (m1[7] * m2[12]), // m4
-                 (m1[4] * m2[1]) + (m1[5] * m2[5]) + (m1[6] * m2[9])  + (m1[7] * m2[13]), // m5
-                 (m1[4] * m2[2]) + (m1[5] * m2[6]) + (m1[6] * m2[10]) + (m1[7] * m2[14]), // m6
-                 (m1[4] * m2[3]) + (m1[5] * m2[7]) + (m1[6] * m2[11]) + (m1[7] * m2[15]), // m7
-                 
-                 (m1[8] * m2[0]) + (m1[9] * m2[4]) + (m1[10] * m2[8])  + (m1[11] * m2[12]), // m8
-                 (m1[8] * m2[1]) + (m1[9] * m2[5]) + (m1[10] * m2[9])  + (m1[11] * m2[13]), // m9
-                 (m1[8] * m2[2]) + (m1[9] * m2[6]) + (m1[10] * m2[10]) + (m1[11] * m2[14]), // m10
-                 (m1[8] * m2[3]) + (m1[9] * m2[7]) + (m1[10] * m2[11]) + (m1[11] * m2[15]), // m11
-                 
-                 (m1[12] * m2[0]) + (m1[13] * m2[4]) + (m1[14] * m2[8])  + (m1[15] * m2[12]), // m12
-                 (m1[12] * m2[1]) + (m1[13] * m2[5]) + (m1[14] * m2[9])  + (m1[15] * m2[13]), // m13
-                 (m1[12] * m2[2]) + (m1[13] * m2[6]) + (m1[14] * m2[10]) + (m1[15] * m2[14]), // m14
-                 (m1[12] * m2[3]) + (m1[13] * m2[7]) + (m1[14] * m2[11]) + (m1[15] * m2[15])  // m15
+  return Matrix4((m2[0]  * m1[0]) + (m2[1]  * m1[4]) + (m2[2]  * m1[8])  + (m2[3]  * m1[12]), // m0
+                 (m2[0]  * m1[1]) + (m2[1]  * m1[5]) + (m2[2]  * m1[9])  + (m2[3]  * m1[13]), // m1
+                 (m2[0]  * m1[2]) + (m2[1]  * m1[6]) + (m2[2]  * m1[10]) + (m2[3]  * m1[14]), // m2
+                 (m2[0]  * m1[3]) + (m2[1]  * m1[7]) + (m2[2]  * m1[11]) + (m2[3]  * m1[15]), // m3
+                 (m2[4]  * m1[0]) + (m2[5]  * m1[4]) + (m2[6]  * m1[8])  + (m2[7]  * m1[12]), // m4
+                 (m2[4]  * m1[1]) + (m2[5]  * m1[5]) + (m2[6]  * m1[9])  + (m2[7]  * m1[13]), // m5
+                 (m2[4]  * m1[2]) + (m2[5]  * m1[6]) + (m2[6]  * m1[10]) + (m2[7]  * m1[14]), // m6
+                 (m2[4]  * m1[3]) + (m2[5]  * m1[7]) + (m2[6]  * m1[11]) + (m2[7]  * m1[15]), // m7
+                 (m2[8]  * m1[0]) + (m2[9]  * m1[4]) + (m2[10] * m1[8])  + (m2[11] * m1[12]), // m8
+                 (m2[8]  * m1[1]) + (m2[9]  * m1[5]) + (m2[10] * m1[9])  + (m2[11] * m1[13]), // m9
+                 (m2[8]  * m1[2]) + (m2[9]  * m1[6]) + (m2[10] * m1[10]) + (m2[11] * m1[14]), // m10
+                 (m2[8]  * m1[3]) + (m2[9]  * m1[7]) + (m2[10] * m1[11]) + (m2[11] * m1[15]), // m11
+                 (m2[12] * m1[0]) + (m2[13] * m1[4]) + (m2[14] * m1[8])  + (m2[15] * m1[12]), // m12
+                 (m2[12] * m1[1]) + (m2[13] * m1[5]) + (m2[14] * m1[9])  + (m2[15] * m1[13]), // m13
+                 (m2[12] * m1[2]) + (m2[13] * m1[6]) + (m2[14] * m1[10]) + (m2[15] * m1[14]), // m14
+                 (m2[12] * m1[3]) + (m2[13] * m1[7]) + (m2[14] * m1[11]) + (m2[15] * m1[15])  // m15
                  );
 }
 
@@ -1131,6 +1128,48 @@ SOC_INLINE const Matrix3 mat4_to_mat3(const Matrix4& m) {
   return Matrix3(m[0], m[1], m[2], 
                  m[4], m[5], m[6], 
                  m[8], m[9], m[10]);
+}
+
+// Generates a 4x4 matrix for a symmetric perspective view frustrum, using the left hand coordinate system 
+// NOTE: The fov is in radians
+SOC_INLINE const Matrix4 mat4_perspective(const float32 fov, const float32 aspect_ratio, const float32 near, const float32 far) {
+  float32 tangent = tan(fov / 2.0f); 
+
+  return Matrix4(1 / (aspect_ratio * tangent), 0.0f, 0.0f, 0.0f, 
+                 0.0f, 1 / tangent, 0.0f, 0.0f, 
+                 0.0f, 0.0f, -(far + near) / (far - near), -1.0f, 
+                 0.0f, 0.0f, -(2 * far * near) / (far - near), 0.0f);
+};
+
+// Generates a 4x4 matrix for a orthographic view frustrum, using the left hand coordinate system
+SOC_INLINE const Matrix4 mat4_orthographic(const float32 left, const float32 right, const float32 bottom, const float32 top) {
+  Matrix4 mat;
+  mat.data[0] = 2.0f / (right - left);
+  mat.data[5] = 2.0f / (top - bottom);
+  mat.data[10] = -1.0f; 
+  mat.data[12] = -(right + left) / (right - left);
+  mat.data[13] = -(top + bottom) / (top - bottom);
+
+  return mat;
+}
+
+// Generates a 4x4 look at view matrix, using ther left handed coordinate system 
+SOC_INLINE const Matrix4 mat4_look_at(const Vector3& eye, const Vector3& target, const Vector3& up) {
+  Matrix4 mat;
+
+  Vector3 forward = vec3_normalize(eye - target);
+  Vector3 left = vec3_normalize(vec3_cross(up, forward)); 
+  Vector3 up_dir = vec3_cross(forward, left);
+
+  mat.data[0] = left.x;    mat.data[4] = left.y;    mat.data[8] = left.z; 
+  mat.data[1] = up_dir.x;  mat.data[5] = up_dir.y;  mat.data[9] = up_dir.z; 
+  mat.data[2] = forward.x; mat.data[6] = forward.y; mat.data[10] = forward.z;
+
+  mat.data[12] = -vec3_dot(left, eye);
+  mat.data[13] = -vec3_dot(up_dir, eye);
+  mat.data[14] = -vec3_dot(forward, eye);
+
+  return mat;
 }
 ///////////////////////////////////////////////////////////////
 
