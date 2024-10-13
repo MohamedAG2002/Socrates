@@ -5,38 +5,68 @@
 
 namespace soc { // Start of soc
 
-// Typedefs
-///////////////////////////////////////////////////////////////
-typedef char  int8;
-typedef short int16; 
-typedef int   int32; 
-typedef long  int64;
-
-typedef unsigned char  uint8;
-typedef unsigned short uint16; 
-typedef unsigned int   uint32; 
-typedef unsigned long  uint64;
-
-typedef float  float32;
-typedef double float64;
-///////////////////////////////////////////////////////////////
-
 // Platform defines
 ///////////////////////////////////////////////////////////////
+
 #ifdef _MSC_VER
+// Windows inline keyword
 #define SOC_INLINE   __forceinline 
 #define SOC_NOINLINE __declspec(noinline)
 #else 
+// Non-Windows inline keyword
 #define SOC_INLINE   inline 
 #define SOC_NOINLINE 
 #endif
+
 ///////////////////////////////////////////////////////////////
 
 // Defines
 ///////////////////////////////////////////////////////////////
+
+// Returns the value of PI
 #define SOC_PI          3.14159265359
+
+// Radians to degrees multiplier  
 #define SOC_RAD2DEG (180.0f / SOC_PI)
+
+// Degrees to radians multiplier
 #define SOC_DEG2RAD (SOC_PI / 180.0f)
+
+///////////////////////////////////////////////////////////////
+
+// Typedefs
+///////////////////////////////////////////////////////////////
+
+// char
+typedef char  int8;
+
+// short
+typedef short int16; 
+
+// int
+typedef int   int32; 
+
+// long
+typedef long  int64;
+
+// unsigned char
+typedef unsigned char  uint8;
+
+// unsigned short
+typedef unsigned short uint16; 
+
+// unsigned int
+typedef unsigned int   uint32; 
+
+// unsigned long
+typedef unsigned long  uint64;
+
+// float
+typedef float  float32;
+
+// double
+typedef double float64;
+
 ///////////////////////////////////////////////////////////////
 
 // Socrates types
@@ -75,18 +105,14 @@ union Vector2 {
   {}
 
   // Index operator overload into the components
+  // NOTE: This indexing operator overload and all other overloads of this type 
+  // will NOT check for out of bounds indices. Please keep this in mind
   float32 operator[](const uint32 index) {
-    if(index < 0 || index > 2) {
-      // @TODO: Should assert here
-      return 0.0f;
-    }
-
     return components[index];
   }
   
   float32 operator[](const uint32 index) const {
     if(index < 0 || index > 2) {
-      // @TODO: Should assert here
       return 0.0f;
     }
 
@@ -133,6 +159,8 @@ union Vector3 {
   {}
   
   // Index operator overload into the components
+  // NOTE: This indexing operator overload and all other overloads of this type 
+  // will NOT check for out of bounds indices. Please keep this in mind
   float32 operator[](const uint32 index) {
     if(index < 0 || index > 3) {
       // @TODO: Should assert here
@@ -177,7 +205,7 @@ union Vector4 {
     :x(x), y(y), z(z), w(w)
   {}
   
-  // Takes a `Vector3` to fill the `x`, `y`, `w` components and also the `w` component
+  // Takes a `Vector3` to fill the `x`, `y`, `w` components and a scalar to fill the `w` component
   Vector4(const Vector3& v, float32 w) 
     :x(v.x), y(v.y), z(v.z), w(w)
   {}
@@ -188,6 +216,8 @@ union Vector4 {
   {}
   
   // Index operator overload into the components
+  // NOTE: This indexing operator overload and all other overloads of this type 
+  // will NOT check for out of bounds indices. Please keep this in mind
   float32 operator[](const uint32 index) {
     if(index < 0 || index > 4) {
       // @TODO: Should assert here
@@ -237,21 +267,23 @@ struct Matrix3 {
     }
   }
 
-  // Takes the scalar and sets all entries to this scalar
+  // Sets all entries of the matrix to this scalar
   Matrix3(float32 scalar) {
     data[0] = scalar; data[1] = scalar; data[2] = scalar;
     data[3] = scalar; data[4] = scalar; data[5] = scalar;
     data[6] = scalar; data[7] = scalar; data[8] = scalar;
   }
 
-  // Fills the matrix with the given vectors 
-  // NOTE: The given vectors will be filled in as columns
+  // Fills the columns of the matrix with the given vectors 
   Matrix3(const Vector3& col1, const Vector3& col2, const Vector3& col3) {
     data[0] = col1.x; data[1] = col1.y; data[2] = col1.z;
     data[3] = col2.x; data[4] = col2.y; data[5] = col2.z;
     data[6] = col3.x; data[7] = col3.y; data[8] = col3.z;
   }
   
+  // Index operator overload into the components
+  // NOTE: This indexing operator overload and all other overloads of this type 
+  // will NOT check for out of bounds indices. Please keep this in mind
   float32 operator[](const uint32 index) {
     if(index > 9 || index < 0) {
       return 0.0f;
@@ -302,7 +334,7 @@ union Matrix4 {
     }
   }
 
-  // Takes the scalar and sets all entries to this scalar
+  // Sets all entries to this scalar
   Matrix4(float32 scalar) {
     data[0]  = scalar; data[1]  = scalar; data[2]  = scalar; data[3]  = scalar;
     data[4]  = scalar; data[5]  = scalar; data[6]  = scalar; data[7]  = scalar;
@@ -310,8 +342,7 @@ union Matrix4 {
     data[12] = scalar; data[13] = scalar; data[14] = scalar; data[15] = scalar;
   }
   
-  // Fills the matrix with the given vectors 
-  // NOTE: The given vectors will be filled in as columns
+  // Fills the columns of the matrix with the given vectors 
   Matrix4(const Vector4& col1, const Vector4& col2, const Vector4& col3, const Vector4& col4) {
     data[0]  = col1.x; data[1]  = col1.y; data[2]  = col1.z; data[3]  = col1.w;
     data[4]  = col2.x; data[5]  = col2.y; data[6]  = col2.z; data[7]  = col2.w;
@@ -319,6 +350,9 @@ union Matrix4 {
     data[12] = col4.x; data[13] = col4.y; data[14] = col4.z; data[15] = col4.w;
   }
   
+  // Index operator overload into the components
+  // NOTE: This indexing operator overload and all other overloads of this type 
+  // will NOT check for out of bounds indices. Please keep this in mind
   float32 operator[](const uint32 index) {
     if(index > 16 || index < 0) {
       return 0.0f;
@@ -337,14 +371,15 @@ union Matrix4 {
 };
 
 // A quaternion 
-///////////////////////////////////////////////////////////////
 union Quaternion {
   struct {
     float32 x, y, z, w;
   };
 
-  // Default CTOR
-  Quaternion() = default;
+  // Default CTOR where the Quaternion gets initialized as: `(0.0f, 0.0f, 0.0f, 1.0f)`
+  Quaternion() 
+    :x(0.0f), y(0.0f), z(0.0f), w(1.0f) 
+  {}
 
   // Taking in the 4 components of the Quaternion 
   Quaternion(const float32 x, const float32 y, const float32 z, const float32 w) 
@@ -356,13 +391,18 @@ union Quaternion {
   Quaternion(const Vector3& vec, const float32 w) 
     :x(vec.x), y(vec.y), z(vec.z), w(w)
   {}
+
+  // Takes a `Vector4` to fill the components of the Quaternion
+  Quaternion(const Vector4& vec) 
+    :x(vec.x), y(vec.y), z(vec.z), w(vec.w)
+  {}
 };
-///////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////
 
 // Vector2 operator overloading
 ///////////////////////////////////////////////////////////////
+
 SOC_INLINE Vector2 operator+(const Vector2& v1, const Vector2& v2) {
   return Vector2(v1.x + v2.x, v1.y + v2.y);
 }
@@ -430,10 +470,12 @@ SOC_INLINE void operator/=(Vector2& v, const float32& s) {
 SOC_INLINE Vector2 operator-(const Vector2& v) {
   return Vector2(-v.x, -v.y);
 }
+
 ///////////////////////////////////////////////////////////////
 
 // Vector3 operator overloading
 ///////////////////////////////////////////////////////////////
+
 SOC_INLINE Vector3 operator+(const Vector3& v1, const Vector3& v2) {
   return Vector3(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
 }
@@ -507,10 +549,12 @@ SOC_INLINE void operator/=(Vector3& v, const float32& s) {
 SOC_INLINE Vector3 operator-(const Vector3& v) {
   return Vector3(-v.x, -v.y, -v.z);
 }
+
 ///////////////////////////////////////////////////////////////
 
 // Vector4 operator overloading
 ///////////////////////////////////////////////////////////////
+
 SOC_INLINE Vector4 operator+(const Vector4& v1, const Vector4& v2) {
   return Vector4(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z, v1.w + v2.w);
 }
@@ -585,10 +629,12 @@ SOC_INLINE void operator/=(Vector4& v, const float32& s) {
 SOC_INLINE Vector4 operator-(const Vector4& v) {
   return Vector4(-v.x, -v.y, -v.z, -v.w);
 }
+
 ///////////////////////////////////////////////////////////////
 
 // Matrix3 operator overloading
 ///////////////////////////////////////////////////////////////
+
 SOC_INLINE Matrix3 operator+(const Matrix3& m1, const Matrix3& m2) {
   Matrix3 result(0.0f);
 
@@ -688,10 +734,12 @@ SOC_INLINE void operator*=(Matrix3& m1, const Matrix3& m2) {
 SOC_INLINE void operator*=(Matrix3& m, const float32 s) {
   m = m * s;
 }
+
 //////////////////////////////////////////////////////////////
 
 // Matrix4 operator overloading
 ///////////////////////////////////////////////////////////////
+
 SOC_INLINE Matrix4 operator+(const Matrix4& m1, const Matrix4& m2) {
   Matrix4 result(0.0f);
 
@@ -795,10 +843,12 @@ SOC_INLINE void operator*=(Matrix4& m1, const Matrix4& m2) {
 SOC_INLINE void operator*=(Matrix4& m, const float32 s) {
   m = m * s;
 }
+
 ///////////////////////////////////////////////////////////////
 
 // Quaternion operator overloading
 ///////////////////////////////////////////////////////////////
+
 SOC_INLINE const Quaternion operator+(const Quaternion& q1, const Quaternion& q2) {
   return Quaternion(q1.x + q2.x, q1.y + q2.y, q1.z + q2.z, q1.w + q2.w);
 }
@@ -833,72 +883,186 @@ SOC_INLINE const Quaternion operator*(const Quaternion& q, const float32 s) {
 SOC_INLINE const void operator*=(Quaternion& q, const float32 s) {
   q = q * s; 
 }
+
+///////////////////////////////////////////////////////////////
+
+// Misc. functions
+///////////////////////////////////////////////////////////////
+
+// Returns a float scalar between `min` and `max`
+SOC_INLINE float32 float_clamp(const float32 value, const float32 min, const float32 max) {
+  if(value > max) {
+    return max;
+  }
+  else if(value < min) {
+    return value;
+  }
+
+  return value;
+}
+
+// Returns a int scalar between `min` and `max`
+SOC_INLINE int32 int_clamp(const int32 value, const int32 min, const int32 max) {
+  if(value > max) {
+    return max;
+  }
+  else if(value < min) {
+    return value;
+  }
+
+  return value;
+}
+
+// Sin of `x`
+SOC_INLINE float64 sin(const float32 x) {
+  return std::sin(x);
+}
+
+// Cos of `x`
+SOC_INLINE float64 cos(const float32 x) {
+  return std::cos(x);
+}
+
+// Tan of `x`
+SOC_INLINE float64 tan(const float32 x) {
+  return std::tan(x);
+}
+
+// Atan of `x`
+SOC_INLINE float64 atan(const float32 x) {
+  return std::atan(x);
+}
+
+// Atan2 of `y` and `x`
+SOC_INLINE float64 atan2(const float32 y, const float32 x) {
+  return std::atan2(y, x);
+}
+
 ///////////////////////////////////////////////////////////////
 
 // Vector2 functions
 ///////////////////////////////////////////////////////////////
+
+// Returns the dot product of `v1` and `v2` 
 SOC_INLINE const float32 vec2_dot(const Vector2& v1, const Vector2& v2) {
   return (v1.x * v2.x) + (v1.y * v2.y);
 }
 
+// Returns the length/magnitude of `v`
 SOC_INLINE const float32 vec2_length(const Vector2& v) {
   return sqrt((v.x * v.x) + (v.y * v.y));
 }
 
+// Returns the normalized version of the vector `v`
 SOC_INLINE const Vector2 vec2_normalize(const Vector2& v) {
   return v / vec2_length(v);
 }
+
+// Returns a vector between `min` and `max`
+SOC_INLINE const Vector2 vec2_clamp(const Vector2& value, const Vector2& min, const Vector2& max) {
+  if((value.x > max.x) && (value.y > max.y)) {
+    return max;
+  }
+  else if((value.x < min.x) && (value.y < min.y)) {
+    return min;
+  }
+  else {
+    return value;
+  }
+}
+
 ///////////////////////////////////////////////////////////////
 
 // Vector3 functions 
 ///////////////////////////////////////////////////////////////
+
+// Returns the dot product of `v1` and `v2` 
 SOC_INLINE const float32 vec3_dot(const Vector3& v1, const Vector3& v2) {
   return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);
 }
 
+// Returns the length/magnitude of `v`
 SOC_INLINE const float32 vec3_length(const Vector3& v) {
   return sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
 }
 
+// Returns the normalized version of the vector `v`
 SOC_INLINE const Vector3 vec3_normalize(const Vector3& v) {
   return v / vec3_length(v);
 }
 
+// Returns the cross product of `v1` and `v2`
 SOC_INLINE const Vector3 vec3_cross(const Vector3& v1, const Vector3& v2) {
   return Vector3((v1.y * v2.z) - (v1.z * v2.y), 
                  (v1.z * v2.x) - (v1.x * v2.z), 
                  (v1.x * v2.y) - (v1.y * v2.x));
 }
+
+// Returns a vector between `min` and `max`
+SOC_INLINE const Vector3 vec3_clamp(const Vector3& value, const Vector3& min, const Vector3& max) {
+  if((value.x > max.x) && (value.y > max.y) && (value.z > max.z)) {
+    return max;
+  }
+  else if((value.x < min.x) && (value.y < min.y) && (value.z < min.z)) {
+    return min;
+  }
+  else {
+    return value;
+  }
+}
+
 ///////////////////////////////////////////////////////////////
 
 // Vector4 functions
 ///////////////////////////////////////////////////////////////
+
+// Returns the dot product of `v1` and `v2` 
 SOC_INLINE const float32 vec4_dot(const Vector4& v1, const Vector4& v2) {
   return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z) + (v1.w * v2.w);
 }
 
+// Returns the length/magnitude of `v`
 SOC_INLINE const float32 vec4_length(const Vector4& v) {
   return sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z) + (v.w * v.w));
 }
 
+// Returns the normalized version of the vector `v`
 SOC_INLINE const Vector4 vec4_normalize(const Vector4& v) {
   return v / vec4_length(v);
 }
+
+// Returns a vector between `min` and `max`
+SOC_INLINE const Vector4 vec4_clamp(const Vector4& value, const Vector4& min, const Vector4& max) {
+  if((value.x > max.x) && (value.y > max.y) && (value.z > max.z) && (value.w > max.w)) {
+    return max;
+  }
+  else if((value.x < min.x) && (value.y < min.y) && (value.z < min.z) && (value.w < min.w)) {
+    return min;
+  }
+  else {
+    return value;
+  }
+}
+
 ///////////////////////////////////////////////////////////////
 
 // Matrix3 functions
 ///////////////////////////////////////////////////////////////
+
+// Returns the determinant of the matrix `m`
 SOC_INLINE const float32 mat3_det(const Matrix3& m) {
   return (m[0] * m[4] * m[8]) + (m[1] * m[5] * m[6]) + (m[2] * m[3] * m[7]) -
          (m[0] * m[5] * m[7]) - (m[1] * m[3] * m[8]) - (m[2] * m[4] * m[6]);
 }
 
+// Returns the transposed (rows and columns switched) version of the matrix `m`
 SOC_INLINE const Matrix3 mat3_transpose(const Matrix3& m) {
   return Matrix3(m[0], m[3], m[6], 
                  m[1], m[4], m[7], 
                  m[2], m[5], m[8]);
 }
 
+// Returns the inverse matrix of the given `m` matrix
 SOC_INLINE const Matrix3 mat3_inverse(const Matrix3& m) {
   Vector3 v1(m[0], m[3], m[6]); 
   Vector3 v2(m[1], m[4], m[7]); 
@@ -915,6 +1079,7 @@ SOC_INLINE const Matrix3 mat3_inverse(const Matrix3& m) {
                  r0.z * inv_det, r1.z * inv_det, r2.z * inv_det);
 }
 
+// Using the given `angle`, returns the rotation matrix on the X-axis
 SOC_INLINE const Matrix3 mat3_rotate_x(const float32 angle) {
   float32 c = cos(angle);
   float32 s = sin(angle);
@@ -924,6 +1089,7 @@ SOC_INLINE const Matrix3 mat3_rotate_x(const float32 angle) {
                  0.0f, s,    c);
 }
 
+// Using the given `angle`, returns the rotation matrix on the Y-axis
 SOC_INLINE const Matrix3 mat3_rotate_y(const float32 angle) {
   float32 c = cos(angle);
   float32 s = sin(angle);
@@ -933,6 +1099,7 @@ SOC_INLINE const Matrix3 mat3_rotate_y(const float32 angle) {
                  -s,   0.0f, c);
 }
 
+// Using the given `angle`, returns the rotation matrix on the Y-axis
 SOC_INLINE const Matrix3 mat3_rotate_z(const float32 angle) {
   float32 c = cos(angle);
   float32 s = sin(angle);
@@ -942,6 +1109,9 @@ SOC_INLINE const Matrix3 mat3_rotate_z(const float32 angle) {
                  0.0f, 0.0f, 1.0f);
 }
 
+// Returns rotation matrix around the given `axis` by `angle` RADIANS
+// NOTE: The given `axis` vector gets normalized inside the function so there's no 
+// need to normalize it yourself.
 SOC_INLINE const Matrix3 mat3_rotate(const Vector3& axis, const float32 angle) {
   float32 c = cos(angle);
   float32 s = sin(angle);
@@ -967,22 +1137,24 @@ SOC_INLINE const Matrix3 mat3_rotate(const Vector3& axis, const float32 angle) {
                  c    + cz * norm_axis.z);// 8
 }
 
-SOC_INLINE const Matrix3 mat3_scale(const Vector3& axis, const float32 scale) {
-  float32 s = (scale - 1.0f);
+// Returns the scale matrix on the given `axis` 
+SOC_INLINE const Matrix3 mat3_scale(const Vector3& scale) {
+  Vector3 s = (scale - 1.0f);
   
-  float32 sx = s * axis.x;
-  float32 sy = s * axis.y;
-  float32 sz = s * axis.z;
+  float32 sx = s.x * scale.x;
+  float32 sy = s.y * scale.y;
+  float32 sz = s.z * scale.z;
 
-  float32 axay = sx * axis.y;
-  float32 axaz = sx * axis.z; 
-  float32 ayaz = sy * axis.z;
+  float32 axay = sx * scale.y;
+  float32 axaz = sx * scale.z; 
+  float32 ayaz = sy * scale.z;
 
-  return Matrix3(sx * axis.x + 1.0f, axay, axaz, 
-                 axay, sy * axis.y + 1.0f, ayaz, 
-                 axaz, ayaz, sz * axis.z + 1.0f);
+  return Matrix3(sx * scale.x + 1.0f, axay, axaz, 
+                 axay, sy * scale.y + 1.0f, ayaz, 
+                 axaz, ayaz, sz * scale.z + 1.0f);
 }
 
+// Returns the reflection matrix from the given `point`
 SOC_INLINE const Matrix3 mat3_reflect(const Vector3& point) {
   float32 x = -2.0f * point.x; 
   float32 y = -2.0f * point.y; 
@@ -997,6 +1169,7 @@ SOC_INLINE const Matrix3 mat3_reflect(const Vector3& point) {
                  axaz, ayaz, z * point.z + 1.0f);
 }
 
+// Returns the skew matrix on the given `axis` towards the given `direction` by `angle` in RADIANS
 SOC_INLINE const Matrix3 mat3_skew(const Vector3& axis, const Vector3& direction, const float32 angle) {
   float t = tan(angle);
 
@@ -1009,16 +1182,21 @@ SOC_INLINE const Matrix3 mat3_skew(const Vector3& axis, const Vector3& direction
                  z * direction.x, z * direction.y, z * direction.z + 1.0f);
 }
 
+// Converts the given `m` Matrix3 into a Matrix4
+// NOTE: The last row of the final matrix is: 0.0f, 0.0f, 0.0f, 1.0f
 SOC_INLINE const Matrix4 mat3_to_mat4(const Matrix3& m) {
   return Matrix4(m[0], m[1], m[2], 0.0f, 
                  m[3], m[4], m[5], 0.0f, 
                  m[6], m[7], m[8], 0.0f, 
                  0.0f, 0.0f, 0.0f, 1.0f);
 }
+
 ///////////////////////////////////////////////////////////////
 
 // Matrix4 functions 
 ///////////////////////////////////////////////////////////////
+
+// Returns the determinant of the given `m` matrix
 SOC_INLINE const float32 mat4_det(const Matrix4& m) {
   return (m[3] * m[6] * m[9]  * m[12]) - (m[2] * m[7] * m[9]  * m[12]) - 
          (m[3] * m[5] * m[10] * m[12]) + (m[1] * m[7] * m[10] * m[12]) + 
@@ -1034,6 +1212,7 @@ SOC_INLINE const float32 mat4_det(const Matrix4& m) {
          (m[1] * m[4] * m[10] * m[15]) + (m[0] * m[5] * m[10] * m[15]); 
 }
 
+// Returns the transposed (rows and columns switched) version of the matrix `m`
 SOC_INLINE const Matrix4 mat4_transpose(const Matrix4& m) {
   return Matrix4(m[0], m[4], m[8],  m[12], 
                  m[1], m[5], m[9],  m[13], 
@@ -1041,6 +1220,7 @@ SOC_INLINE const Matrix4 mat4_transpose(const Matrix4& m) {
                  m[3], m[7], m[11], m[15]);
 }
 
+// Returns the inverse matrix of the given `m` matrix
 SOC_INLINE const Matrix4 mat4_inverse(const Matrix4& m) {
   Vector3 a(m[0], m[4], m[8]);
   Vector3 b(m[1], m[5], m[9]);
@@ -1074,7 +1254,9 @@ SOC_INLINE const Matrix4 mat4_inverse(const Matrix4& m) {
                 -vec3_dot(b, t), vec3_dot(a, t), -vec3_dot(d, s), vec3_dot(c, s));
 }
 
-
+// Returns the translation matrix using the given `position`
+// NOTE: The function uses an identity matrix (the diagonal entries of the matrix are all 1) 
+// to calculate the transformation.
 SOC_INLINE const Matrix4 mat4_translate(const Vector3& position) {
   Matrix4 iden_mat;
   
@@ -1097,7 +1279,9 @@ SOC_INLINE const Matrix4 mat4_translate(const Vector3& position) {
   return iden_mat;
 }
 
-// @NOTE: The axis SHOULD be normalized
+// Returns the rotation matrix around the given `axis` by `angle` in RADIANS
+// NOTE: The function uses an identity matrix (the diagonal entries of the matrix are all 1) 
+// to calculate the transformation.
 SOC_INLINE const Matrix4 mat4_rotate(const Vector3& axis, const float32 angle) {
   Matrix3 mat = mat3_rotate(axis, angle); 
   return Matrix4(mat[0], mat[1], mat[2], 0.0f, 
@@ -1106,6 +1290,9 @@ SOC_INLINE const Matrix4 mat4_rotate(const Vector3& axis, const float32 angle) {
                  0.0f,   0.0f,   0.0f,   1.0f);
 }
 
+// Returns the scale matrix on the given `scale`
+// NOTE: The function uses an identity matrix (the diagonal entries of the matrix are all 1) 
+// to calculate the transformation.
 SOC_INLINE const Matrix4 mat4_scale(const Vector3& scale) {
   Matrix4 iden_mat;
 
@@ -1124,6 +1311,7 @@ SOC_INLINE const Matrix4 mat4_scale(const Vector3& scale) {
   return iden_mat;
 }
 
+// Converts the given 'm' Matrix4 to a Matrix3
 SOC_INLINE const Matrix3 mat4_to_mat3(const Matrix4& m) {
   return Matrix3(m[0], m[1], m[2], 
                  m[4], m[5], m[6], 
@@ -1171,10 +1359,13 @@ SOC_INLINE const Matrix4 mat4_look_at(const Vector3& eye, const Vector3& target,
 
   return mat;
 }
+
 ///////////////////////////////////////////////////////////////
 
 // Quaternion functions
 ///////////////////////////////////////////////////////////////
+
+// Returns the rotation matrix calculated from the quaternion `q`
 SOC_INLINE const Matrix3 quat_get_mat3(const Quaternion& q) {
   float32 x2 = q.x * q.x; 
   float32 y2 = q.y * q.y; 
@@ -1192,10 +1383,12 @@ SOC_INLINE const Matrix3 quat_get_mat3(const Quaternion& q) {
                  2.0f * (xz + wy), 2.0f * (yz - wx), 1.0f - 2.0f * (x2 + y2));
 }
 
+// The same as `quat_get_mat3` but returns a Matrix4 instead
 SOC_INLINE const Matrix4 quat_get_mat4(const Quaternion& q) {
   return soc::mat3_to_mat4(quat_get_mat3(q));
 }
 
+// Sets and returns the rotation of a quaternion using the given matrix `m`
 SOC_INLINE const Quaternion quat_set_mat3(const Matrix3& m) {
   Quaternion q; 
 
@@ -1240,14 +1433,17 @@ SOC_INLINE const Quaternion quat_set_mat3(const Matrix3& m) {
   return q;
 }
 
+// Same as `quat_set_mat3` but uses a Matrix4 instead
 SOC_INLINE const Quaternion quat_set_mat4(const Matrix4& m) {
   return quat_set_mat3(mat4_to_mat3(m));
 }
 
+// Rotates and returns a quaternion using the given `axis` by `angle` in radians
 SOC_INLINE const Quaternion quat_axis_angle(const Vector3& axis, const float32 angle) {
   float32 s = sin(angle * 0.5f);
   return Quaternion(axis * s, cos(angle * 0.5f));
 }
+
 ///////////////////////////////////////////////////////////////
 
 } // End of soc

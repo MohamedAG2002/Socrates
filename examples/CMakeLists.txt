@@ -4,7 +4,7 @@ project(Soc_Example)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(EXAMPLE_SOURCES 
-  main.cpp
+  camera_example.cpp
 )
 
 add_executable(${PROJECT_NAME} ${EXAMPLE_SOURCES})
