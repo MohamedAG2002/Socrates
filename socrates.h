@@ -1,7 +1,15 @@
+// Socrates v1.0 - A single-file easy to use math library made for game development
+// 
+// To include the library in your project, copy this file (socrates.h) into the directory where you usually 
+// keep your libraries. And then... that's it. No compilation, no setting up for shared or static libraries, and 
+// no messing around with CMake or other build systems. Everything you'll need to know is in this one file you're 
+// currently viewing. 
+//
+// If you have any inquires or potential bugs, please contact me: https://mohamedag2002.github.io/
+
 #pragma once
 
 #include <cmath>
-#include <cstdio>
 
 namespace soc { // Start of soc
 
@@ -914,28 +922,58 @@ SOC_INLINE int32 int_clamp(const int32 value, const int32 min, const int32 max) 
 }
 
 // Sin of `x`
-SOC_INLINE float64 sin(const float32 x) {
+SOC_INLINE float64 sin(const float64 x) {
   return std::sin(x);
 }
 
 // Cos of `x`
-SOC_INLINE float64 cos(const float32 x) {
+SOC_INLINE float64 cos(const float64 x) {
   return std::cos(x);
 }
 
 // Tan of `x`
-SOC_INLINE float64 tan(const float32 x) {
+SOC_INLINE float64 tan(const float64 x) {
   return std::tan(x);
 }
 
 // Atan of `x`
-SOC_INLINE float64 atan(const float32 x) {
+SOC_INLINE float64 atan(const float64 x) {
   return std::atan(x);
 }
 
 // Atan2 of `y` and `x`
-SOC_INLINE float64 atan2(const float32 y, const float32 x) {
+SOC_INLINE float64 atan2(const float64 y, const float64 x) {
   return std::atan2(y, x);
+}
+
+// Floor of `x`
+SOC_INLINE float64 floor(const float64 x) {
+  return std::floor(x);
+}
+
+// Square root of `x` 
+SOC_INLINE float64 sqrt(const float64 x) {
+  return std::sqrt(x);
+}
+
+// Returns the smallest number between `x` and `y` 
+SOC_INLINE float64 min(const float64 x, const float64 y) {
+  return std::min(x, y);
+}
+
+// Returns the biggest number between `x` and `y` 
+SOC_INLINE float64 max(const float64 x, const float64 y) {
+  return std::max(x, y);
+}
+
+// Returns the linear interpolation with the given `start`, `end`, and `amount` 
+SOC_INLINE float32 lerp(const float32 start, const float32 end, const float32 amount) {
+  return start + amount * (end - start);
+}
+
+// Remaps the given `value` from the old range to a new range 
+SOC_INLINE float32 remap(const float32 value, const float32 old_min, const float32 old_max, const float32 new_min, const float32 new_max) {
+  return (value - old_min) / (old_max - old_min) * (new_max - new_min) + new_max;
 }
 
 ///////////////////////////////////////////////////////////////
