@@ -25,7 +25,7 @@ There is only one step needed to set and use Socrates:
 That's it. All the functions in Socrates are inlined and written in the header file itself. There is no need to use CMake, Make, or any other building system to configure Socrates. You don't even need to build it. It will just live there with the rest of your code. So greet it with welcoming arms, please. 
 
 # Example 
-Here's a simple example of using Socrates: 
+Here's some simple examples of using Socrates: 
 
 ```c++
 #include "socrates.h"
@@ -36,6 +36,8 @@ int main() {
 
     soc::Vector3 diff = enemy_position - player_position;
     diff = soc::vec3_normalize(diff); // Normalize the `diff` vector
+    
+    float dist = soc::vec3_distance(player_position, enemy_position); // Get the distance between two vectors
 
     // You can either access the components like this: 
     diff.x *= 2.0f; 
@@ -101,4 +103,56 @@ int main() {
 }
 ```
 
-For more thorough examples, check out the `examples` directory in the repo.
+Here's another example of how you might create a 3D camera using Socrates: 
+
+```c++
+#include "socrates.h"
+
+struct Camera3D {
+  float yaw, pitch, zoom;
+
+  soc::Vector3 position, up, direction, front;
+  soc::Matrix4 view_projection;
+};
+
+Camera3D camera_create(const soc::Vector3& position, const soc::Vector3& target) {
+  Camera3D  cam; 
+ 
+  cam.yaw   = -90.0f;
+  cam.pitch = 0.0f;
+  cam.zoom  = 45.0f;
+
+  soc::Vector3 look_dir(position - target); 
+  soc::Vector3 up_axis(0.0f, 1.0f, 0.0f);
+  soc::Vector3 right_axis = soc::vec3_normalize(soc::vec3_cross(up_axis, look_dir));
+  
+  cam.position    = position; 
+  cam.up          = soc::vec3_normalize(soc::vec3_cross(look_dir, right_axis));
+  cam.direction.x = cos((cam.yaw * SOC_DEG2RAD)) * cos((cam.pitch * SOC_DEG2RAD));
+  cam.direction.y = sin((cam.pitch * SOC_DEG2RAD));
+  cam.direction.z = sin((cam.yaw * SOC_DEG2RAD)) * cos((cam.pitch * SOC_DEG2RAD));
+  cam.front       = soc::vec3_normalize(cam.direction);
+
+  return cam;
+}
+
+void camera_update(Camera3D& cam) {
+  cam.view_projection = soc::mat4_perspective((cam.zoom * SOC_DEG2RAD), 1280.0f / 720.0f, 0.1f, 100.0f) * 
+    soc::mat4_look_at(cam.position, cam.position + cam.front, cam.up);
+
+  cam.direction.x = soc::cos((cam.yaw * SOC_DEG2RAD)) * soc::cos((cam.pitch * SOC_DEG2RAD));
+  cam.direction.y = soc::sin((cam.pitch * SOC_DEG2RAD));
+  cam.direction.z = soc::sin((cam.yaw * SOC_DEG2RAD)) * soc::cos((cam.pitch * SOC_DEG2RAD));
+  cam.front       = soc::vec3_normalize(cam.direction);
+}
+
+int main() {
+  Camera3D cam = camera_create(soc::Vector3(10.0f, 0.0f, 10.0f), soc::Vector3(0.0f, 0.0f, -3.0f));
+
+  while(true) {
+    camera_update(cam);
+  }
+}
+```
+
+More examples might be added in the future so keep your eyes open.

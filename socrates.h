@@ -1009,6 +1009,49 @@ SOC_INLINE const Vector2 vec2_clamp(const Vector2& value, const Vector2& min, co
   }
 }
 
+// Returns the distance between `v1` and `v2` 
+SOC_INLINE const float32 vec2_distance(const Vector2& v1, const Vector2& v2) {
+  soc::Vector2 diff = v2 - v1;
+  return vec2_length(diff);
+}
+
+// Returns the linear interpolation between `start` and `end` by `amount` 
+SOC_INLINE const Vector2 vec2_lerp(const Vector2& start, const Vector2& end, const float32 amount) {
+  return Vector2(lerp(start.x, end.x, amount), lerp(start.y, end.y, amount));
+}
+
+// Retruns the smallest vector between `v1` and `v2` 
+SOC_INLINE const Vector2 vec2_min(const Vector2& v1, const Vector2& v2) {
+  float32 v1_sum = v1.x + v1.y;
+  float32 v2_sum = v2.x + v2.y;
+
+  // `v2` is the smallest vector
+  if(v1_sum > v2_sum) {
+    return v2;
+  }
+
+  return v1;
+}
+
+// Retruns the biggest vector between `v1` and `v2` 
+SOC_INLINE const Vector2 vec2_max(const Vector2& v1, const Vector2& v2) {
+  float32 v1_sum = v1.x + v1.y;
+  float32 v2_sum = v2.x + v2.y;
+
+  // `v1` is the biggest vector
+  if(v1_sum > v2_sum) {
+    return v1;
+  }
+
+  return v2;
+}
+
+// Returns the angle in RADIANS between `point1` and `point2` 
+SOC_INLINE const float32 vec2_angle(const Vector2& point1, const Vector2& point2) {
+  soc::Vector2 diff = point2 - point1;
+  return atan2(diff.y, diff.x);
+}
+
 ///////////////////////////////////////////////////////////////
 
 // Vector3 functions 
@@ -1049,6 +1092,49 @@ SOC_INLINE const Vector3 vec3_clamp(const Vector3& value, const Vector3& min, co
   }
 }
 
+// Returns the distance between `v1` and `v2` 
+SOC_INLINE const float32 vec3_distance(const Vector3& v1, const Vector3& v2) {
+  soc::Vector3 diff = v2 - v1;
+  return vec3_length(diff);
+}
+
+// Returns the linear interpolation between `start` and `end` by `amount` 
+SOC_INLINE const Vector3 vec3_lerp(const Vector3& start, const Vector3& end, const float32 amount) {
+  return Vector3(lerp(start.x, end.x, amount), lerp(start.y, end.y, amount), lerp(start.z, end.z, amount));
+}
+
+// Retruns the smallest vector between `v1` and `v2` 
+SOC_INLINE const Vector3 vec3_min(const Vector3& v1, const Vector3& v2) {
+  float32 v1_sum = v1.x + v1.y + v1.z;
+  float32 v2_sum = v2.x + v2.y + v2.z;
+
+  // `v2` is the smallest vector
+  if(v1_sum > v2_sum) {
+    return v2;
+  }
+
+  return v1;
+}
+
+// Retruns the biggest vector between `v1` and `v2` 
+SOC_INLINE const Vector3 vec3_max(const Vector3& v1, const Vector3& v2) {
+  float32 v1_sum = v1.x + v1.y + v1.z;
+  float32 v2_sum = v2.x + v2.y + v2.z;
+
+  // `v1` is the biggest vector
+  if(v1_sum > v2_sum) {
+    return v1;
+  }
+
+  return v2;
+}
+
+// Returns the angle in RADIANS between `point1` and `point2` 
+SOC_INLINE const float32 vec3_angle(const Vector3& point1, const Vector3& point2) {
+  soc::Vector3 diff = point2 - point1;
+  return atan2(diff.y, diff.x);
+}
+
 ///////////////////////////////////////////////////////////////
 
 // Vector4 functions
@@ -1080,6 +1166,37 @@ SOC_INLINE const Vector4 vec4_clamp(const Vector4& value, const Vector4& min, co
   else {
     return value;
   }
+}
+
+// Returns the linear interpolation between `start` and `end` by `amount` 
+SOC_INLINE const Vector4 vec4_lerp(const Vector4& start, const Vector4& end, const float32 amount) {
+  return Vector4(lerp(start.x, end.x, amount), lerp(start.y, end.y, amount), lerp(start.z, end.z, amount), lerp(start.w, end.w, amount));
+}
+
+// Retruns the smallest vector between `v1` and `v2` 
+SOC_INLINE const Vector4 vec3_min(const Vector4& v1, const Vector4& v2) {
+  float32 v1_sum = v1.x + v1.y + v1.z + v1.w;
+  float32 v2_sum = v2.x + v2.y + v2.z + v2.w;
+
+  // `v2` is the smallest vector
+  if(v1_sum > v2_sum) {
+    return v2;
+  }
+
+  return v1;
+}
+
+// Retruns the biggest vector between `v1` and `v2` 
+SOC_INLINE const Vector4 vec4_max(const Vector4& v1, const Vector4& v2) {
+  float32 v1_sum = v1.x + v1.y + v1.z + v1.w;
+  float32 v2_sum = v2.x + v2.y + v2.z + v2.w;
+
+  // `v1` is the biggest vector
+  if(v1_sum > v2_sum) {
+    return v1;
+  }
+
+  return v2;
 }
 
 ///////////////////////////////////////////////////////////////
