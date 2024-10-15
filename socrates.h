@@ -31,14 +31,20 @@ namespace soc { // Start of soc
 // Defines
 ///////////////////////////////////////////////////////////////
 
-// Returns the value of PI
-#define SOC_PI          3.14159265359
+// The value of PI
+#define SOC_PI 3.14159265359
 
 // Radians to degrees multiplier  
 #define SOC_RAD2DEG (180.0f / SOC_PI)
 
 // Degrees to radians multiplier
 #define SOC_DEG2RAD (SOC_PI / 180.0f)
+
+// The epsilon which is the lowest possible decimal point value 
+#define SOC_EPSILON 1.192092896e-07f
+
+#define SOC_FLOAT_MIN -3.40282e+38F
+#define SOC_FLOAT_MAX  3.40282e+38F
 
 ///////////////////////////////////////////////////////////////
 
